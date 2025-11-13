@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 30 15% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 15% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 15% 10%;
+
+    --primary: 30 67% 55%;
+    --primary-foreground: 30 15% 10%;
+
+    --secondary: 30 5% 96%;
+    --secondary-foreground: 30 15% 10%;
+
+    --muted: 30 5% 96%;
+    --muted-foreground: 30 5% 60%;
+
+    --accent: 30 5% 90%;
+    --accent-foreground: 30 15% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 5% 90%;
+    --input: 30 5% 90%;
+    --ring: 30 67% 55%;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 30 15% 10%; /* Dark Brown */
+    --foreground: 30 43% 91%; /* Warm Off-White */
+
+    --card: 30 15% 14%; /* Slightly Lighter Brown */
+    --card-foreground: 30 43% 91%;
+
+    --popover: 30 15% 8%;
+    --popover-foreground: 30 43% 91%;
+
+    --primary: 30 67% 55%; /* Warm Orange */
+    --primary-foreground: 30 15% 10%; /* Dark Brown for contrast */
+
+    --secondary: 30 15% 18%; /* Darker Muted Brown for secondary buttons */
+    --secondary-foreground: 30 43% 85%;
+
+    --muted: 30 15% 18%;
+    --muted-foreground: 30 20% 65%;
+
+    --accent: 30 67% 45%; /* Darker orange for hover */
+    --accent-foreground: 30 43% 91%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 30 15% 18%;
+    --input: 30 15% 18%;
+    --ring: 30 67% 55%; /* Warm Orange */
+    
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .spoiler-button {
+    @apply inline-flex items-center rounded-md border border-dashed bg-muted px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-foreground/50 hover:text-foreground;
+  }
+
+}

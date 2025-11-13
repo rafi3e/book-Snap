@@ -1,0 +1,318 @@
+
+{
+  "entities": {
+    "Book": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Book",
+      "type": "object",
+      "description": "Represents a book in the BookSnap application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the book."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the book."
+        },
+        "author": {
+          "type": "string",
+          "description": "The author of the book."
+        },
+        "publicationYear": {
+          "type": "number",
+          "description": "The year the book was published."
+        },
+        "description": {
+          "type": "string",
+          "description": "A synopsis or description of the book."
+        },
+        "coverImageUrl": {
+          "type": "string",
+          "description": "URL of the book cover image.",
+          "format": "uri"
+        },
+        "genre": {
+          "type": "string",
+          "description": "The genre of the book (e.g., Fiction, Science Fiction, Mystery)."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "author"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the BookSnap application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's username."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short bio for the user."
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email"
+      ]
+    },
+    "LibraryEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LibraryEntry",
+      "type": "object",
+      "description": "Represents an entry in a user's library, linking a user to a book and its reading status.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the library entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N LibraryEntry)"
+        },
+        "bookId": {
+          "type": "string",
+          "description": "Reference to Book. (Relationship: Book 1:N LibraryEntry)"
+        },
+        "readingStatus": {
+          "type": "string",
+          "description": "The reading status of the book (Want to Read, Reading, Finished)."
+        },
+        "progress": {
+          "type": "number",
+          "description": "The reading progress as a percentage (0-100)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "bookId",
+        "readingStatus"
+      ]
+    },
+    "Recommendation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Recommendation",
+      "type": "object",
+      "description": "Represents a book recommendation for a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the recommendation."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Recommendation)"
+        },
+        "bookId": {
+          "type": "string",
+          "description": "Reference to Book. (Relationship: Book 1:N Recommendation)"
+        },
+        "reason": {
+          "type": "string",
+          "description": "The reason for the recommendation (e.g., 'Based on your reading history')."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "bookId",
+        "reason"
+      ]
+    },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a comment or a reply posted by a user on a book's discussion page.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the comment."
+        },
+        "bookId": {
+          "type": "string",
+          "description": "Reference to the Book this comment is about."
+        },
+        "parentId": {
+          "type": "string",
+          "description": "If this is a reply, the ID of the parent comment. Otherwise null."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who posted the comment."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user at the time of posting."
+        },
+        "userAvatar": {
+          "type": "string",
+          "description": "The avatar ID of the user at the time of posting."
+        },
+        "text": {
+          "type": "string",
+          "description": "The content of the comment."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the comment was created."
+        },
+        "score": {
+          "type": "number",
+          "description": "The vote score of the comment."
+        },
+        "upvotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of user IDs who have upvoted the comment."
+        },
+        "downvotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of user IDs who have downvoted the comment."
+        },
+        "isSpoiler": {
+          "type": "boolean",
+          "description": "Whether the comment is marked as a spoiler."
+        }
+      },
+      "required": [
+        "id",
+        "bookId",
+        "userId",
+        "username",
+        "text",
+        "createdAt",
+        "score",
+        "upvotes",
+        "downvotes"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles.  Path-based ownership ensures only the user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/libraryEntries/{libraryEntryId}",
+        "definition": {
+          "entityName": "LibraryEntry",
+          "schema": {
+            "$ref": "#/backend/entities/LibraryEntry"
+          },
+          "description": "Stores library entries for each user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "libraryEntryId",
+              "description": "The unique identifier for the library entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/recommendations/{recommendationId}",
+        "definition": {
+          "entityName": "Recommendation",
+          "schema": {
+            "$ref": "#/backend/entities/Recommendation"
+          },
+          "description": "Stores book recommendations for each user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "recommendationId",
+              "description": "The unique identifier for the recommendation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/books/{bookId}",
+        "definition": {
+          "entityName": "Book",
+          "schema": {
+            "$ref": "#/backend/entities/Book"
+          },
+          "description": "Stores book information. Accessible to all users.",
+          "params": [
+            {
+              "name": "bookId",
+              "description": "The unique identifier for the book."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/books/{bookId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/backend/entities/Comment"
+          },
+          "description": "Stores comments and replies for each book. Publicly readable, but only authenticated users can write.",
+          "params": [
+            {
+              "name": "bookId",
+              "description": "The unique identifier for the book."
+            },
+            {
+              "name": "commentId",
+              "description": "The unique identifier for the comment."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to provide a secure, scalable, and debuggable solution for the BookSnap application, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC (Database-Based Access Control), and QAPs (Rules are not Filters).\n\n**Authorization Independence:**  Authorization independence is achieved by storing the `userId` within the LibraryEntry and Recommendation documents. This denormalization eliminates the need for `get()` calls in security rules to verify the user's ownership, enabling atomic operations (transactions/batches) and simplifies debugging.\n\n**Structural Segregation (Homogeneous Security Posture):** The structure segregates user-specific data into subcollections under the `/users/{userId}` path, ensuring that all documents within those subcollections share the same security requirements, in particular, ownership by the specified user.\n\n**Access Modeling (Standardization and Consistency):** Access control is modeled using path-based ownership. Each user has their own LibraryEntries and Recommendations stored under their respective user ID, enforcing private data access based on the authenticated user ID.\n\n**QAPs Support:** The structure supports secure `list` operations by using path-based ownership. Rules can easily filter based on the `userId` to allow listing only the LibraryEntries and Recommendations associated with the authenticated user.\n\n**Invariants:** The structure supports the integrity of ownership by explicitly storing the `userId` in each LibraryEntry and Recommendation, ensuring that the correct user is always associated with their data."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "BookSnap",
+  "short_name": "BookSnap",
+  "description": "Snap it. Know it. Discover any book instantly.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#F4B400",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

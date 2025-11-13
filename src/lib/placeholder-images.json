@@ -1,0 +1,52 @@
+{
+  "placeholderImages": [
+    {
+      "id": "book-cover-1",
+      "description": "A book cover with an abstract painting of a face.",
+      "imageUrl": "https://images.unsplash.com/photo-1531489956451-20957fab52f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMHBhaW50aW5nfGVufDB8fHx8MTc2MjcxNDE2M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract painting"
+    },
+    {
+      "id": "book-cover-2",
+      "description": "A book cover with a minimalist geometric design.",
+      "imageUrl": "https://images.unsplash.com/photo-1722715917796-f9f777f51597?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxnZW9tZXRyaWMlMjBkZXNpZ258ZW58MHx8fHwxNzYyNzAxMjgxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "geometric design"
+    },
+    {
+      "id": "book-cover-3",
+      "description": "A book cover featuring a vintage photograph of a cityscape.",
+      "imageUrl": "https://images.unsplash.com/photo-1690399656789-5b57f53948d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2aW50YWdlJTIwY2l0eXNjYXBlfGVufDB8fHx8MTc2Mjc2MTEwNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vintage cityscape"
+    },
+    {
+      "id": "book-cover-4",
+      "description": "A book cover with a silhouette of a person against a sunset.",
+      "imageUrl": "https://images.unsplash.com/photo-1748930042759-bab91d39e09c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzaWxob3VldHRlJTIwc3Vuc2V0fGVufDB8fHx8MTc2MjY5ODY0OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "silhouette sunset"
+    },
+    {
+      "id": "book-cover-5",
+      "description": "A book cover with bold, modern typography.",
+      "imageUrl": "https://images.unsplash.com/photo-1488665717449-ca273d1d60a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjB0eXBvZ3JhcGh5fGVufDB8fHx8MTc2MjgwNjIxNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern typography"
+    },
+    {
+      "id": "book-cover-6",
+      "description": "A book cover with a dark and moody forest scene.",
+      "imageUrl": "https://images.unsplash.com/photo-1529923762146-216d5f67e57d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb29keSUyMGZvcmVzdHxlbnwwfHx8fDE3NjI4MDYyMTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "moody forest"
+    },
+    {
+      "id": "book-cover-7",
+      "description": "A book cover with a watercolor illustration of flowers.",
+      "imageUrl": "https://images.unsplash.com/photo-1579167728798-a1cf3d595960?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3YXRlcmNvbG9yJTIwZmxvd2Vyc3xlbnwwfHx8fDE3NjI4MDYyMTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "watercolor flowers"
+    },
+    {
+      "id": "book-cover-8",
+      "description": "A book cover showing a dramatic cosmic nebula.",
+      "imageUrl": "https://images.unsplash.com/photo-1650365449083-b3113ff48337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb3NtaWMlMjBuZWJ1bGF8ZW58MHx8fHwxNzYyNzg0NzQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cosmic nebula"
+    }
+  ]
+}

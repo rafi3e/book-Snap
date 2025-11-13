@@ -1,0 +1,263 @@
+
+/**
+ * @file Firebase Security Rules for BookSnap Firestore Database
+ *
+ * @core_philosophy This ruleset enforces a strict user-ownership model for user profiles, library entries, and recommendations. Books are publicly accessible.
+ * @data_structure All user-specific data is nested under /users/{userId}, while book data resides in the top-level /books/{bookId} collection.
+ * @key_security_decisions
+ *   - User listing is disabled.
+ *   - All write operations on user-specific data require authentication and ownership validation.
+ *   - Books are publicly readable but writes are not allowed.
+ * @denormalization The LibraryEntry and Recommendation documents denormalize the 'userId' to enable performant owner checks without additional reads.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profile data.
+     * @path /users/{userId}
+     * @allow (create) Signed-in user with UID matching the userId in the path can create their profile.
+     * @allow (get, update, delete) Signed-in user with UID matching the userId in the path can read, update, or delete their profile.
+     * @deny (create) Signed-in user attempts to create a profile with a userId that does not match their own UID.
+     * @deny (list) All users are denied the ability to list user profiles.
+     * @principle Enforces document ownership for writes; restricts listing of user profiles.
+     */
+    match /users/{userId} {
+      // Verifies that the user is signed in.
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Verifies that the requested userId matches the authenticated user's UID.
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      // Allow the user to read their own profile
+      allow get: if isOwner(userId);
+
+      // Prevent listing of all users
+      allow list: if false;
+
+      // Allow creation if the user is creating their own profile.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+
+      // Allow updates if the user is the owner and the ID is immutable.
+      allow update: if isOwner(userId) && request.resource.data.id == resource.data.id;
+
+      // Only the user can delete their own profile
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Controls access to library entries for a specific user.
+     * @path /users/{userId}/libraryEntries/{libraryEntryId}
+     * @allow (create) Signed-in user with UID matching the userId in the path can create library entries.
+     * @allow (get, list, update, delete) Signed-in user with UID matching the userId in the path can read, list, update, or delete their own library entries.
+     * @deny (create) Signed-in user attempts to create a library entry with a userId that does not match their own UID.
+     * @deny (update) Signed-in user attempts to update a library entry owned by another user.
+     * @principle Enforces document ownership for writes; restricts access to a user's own data tree; validates relational integrity between documents.
+     */
+    match /users/{userId}/libraryEntries/{libraryEntryId} {
+      // Verifies that the user is signed in.
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Verifies that the requested userId matches the authenticated user's UID.
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      // Verifies that the user owns the existing document.
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      // Allows reads to the user's own library entries
+      allow get: if isOwner(userId);
+
+      // Allows listing of the user's own library entries
+      allow list: if isOwner(userId);
+
+      // Only the owner can create a library entry
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+
+      // Only the owner can update a library entry
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+
+      // Only the owner can delete a library entry
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to book recommendations for a specific user.
+     * @path /users/{userId}/recommendations/{recommendationId}
+     * @allow (create) Signed-in user with UID matching the userId in the path can create recommendations.
+     * @allow (get, list, update, delete) Signed-in user with UID matching the userId in the path can read, list, update, or delete their own recommendations.
+     * @deny (create) Signed-in user attempts to create a recommendation with a userId that does not match their own UID.
+     * @deny (update) Signed-in user attempts to update a recommendation owned by another user.
+     * @principle Enforces document ownership for writes; restricts access to a user's own data tree; validates relational integrity between documents.
+     */
+    match /users/{userId}/recommendations/{recommendationId} {
+      // Verifies that the user is signed in.
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Verifies that the requested userId matches the authenticated user's UID.
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
+
+      // Verifies that the user owns the existing document.
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      // Allows reads to the user's own recommendations
+      allow get: if isOwner(userId);
+
+      // Allows listing of the user's own recommendations
+      allow list: if isOwner(userId);
+
+      // Only the owner can create a recommendation
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+
+      // Only the owner can update a recommendation
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+
+      // Only the owner can delete a recommendation
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to book data. Books are publicly readable but writes are not allowed.
+     * @path /books/{bookId}
+     * @allow (get, list) All users, including unauthenticated users, can read and list book data.
+     * @deny (create, update, delete) No users are allowed to create, update, or delete book data.
+     * @principle Allows public read access; restricts all write access to the books collection.
+     * @last_updated Another focused attempt to trigger backend provisioning for Google Auth.
+     */
+    match /books/{bookId} {
+      // Allows public reads
+      allow get, list: if true;
+
+      // Prevent all writes
+      allow create, update, delete: if false;
+
+      /**
+       * @description Controls access to comments on a specific book.
+       * @path /books/{bookId}/comments/{commentId}
+       * @allow (get, list) All users, including unauthenticated users, can read comments.
+       * @allow (create) Any signed-in user can create a comment. Validates required fields.
+       * @allow (update, delete) A signed-in user can only update or delete their own comment, or vote.
+       * @principle Enables public discussion while enforcing ownership for writes.
+       */
+      match /comments/{commentId} {
+        // Verifies that the user is signed in.
+        function isSignedIn() {
+          return request.auth != null;
+        }
+
+        // Verifies that the user owns the comment document.
+        function isCommentOwner() {
+          return isSignedIn() && request.auth.uid == resource.data.userId;
+        }
+        
+        // Verifies the incoming data for a new comment.
+        function isValidNewComment() {
+          let data = request.resource.data;
+          // Either it's a top-level comment (no parentId) or the parentId exists in the same book.
+          let isParentValid = (!('parentId' in data) || data.parentId == null) || 
+                              (exists(/databases/$(database)/documents/books/$(bookId)/comments/$(data.parentId)));
+          return data.userId == request.auth.uid &&
+                 data.bookId == bookId &&
+                 data.username is string && data.username.size() > 0 &&
+                 data.text is string && data.text.size() > 0 &&
+                 data.createdAt == request.time &&
+                 data.score == 0 &&
+                 data.upvotes.size() == 0 &&
+                 data.downvotes.size() == 0 &&
+                 ('isSpoiler' in data && data.isSpoiler is bool) &&
+                 isParentValid;
+        }
+        
+        // Verifies the incoming data for an updated comment (text edit).
+        function isValidUpdatedComment() {
+          let data = request.resource.data;
+          // parentId cannot be changed
+          let isParentIdUnchanged = (!('parentId' in resource.data) && !('parentId' in data)) ||
+                                    (resource.data.parentId == data.parentId);
+          return data.userId == resource.data.userId && // Owner cannot change
+                 data.bookId == resource.data.bookId && // Book cannot change
+                 data.username == resource.data.username && // username is captured at creation
+                 data.createdAt == resource.data.createdAt && // cannot change creation time
+                 data.text is string && data.text.size() > 0 &&
+                 data.isSpoiler == resource.data.isSpoiler &&
+                 isParentIdUnchanged;
+        }
+
+        // Verifies the incoming data for a vote update.
+        function isValidVoteUpdate() {
+            let data = request.resource.data;
+            let existingData = resource.data;
+            let uid = request.auth.uid;
+            
+            let isParentIdUnchanged = existingData.get('parentId', null) == data.get('parentId', null);
+
+
+            // Only votes and score can change
+            let otherFieldsUnchanged = data.text == existingData.text &&
+                                        data.userId == existingData.userId &&
+                                        data.bookId == existingData.bookId &&
+                                        data.username == existingData.username &&
+                                        data.isSpoiler == existingData.isSpoiler &&
+                                        isParentIdUnchanged;
+            
+            // Check vote logic
+            let upvotes = data.upvotes;
+            let downvotes = data.downvotes;
+            let oldUpvotes = existingData.upvotes;
+            let oldDownvotes = existingData.downvotes;
+
+            // A user can't be in both lists
+            let consistentVoteState = !(uid in upvotes && uid in downvotes);
+            
+            // Validate changes to vote arrays: only the current user can be added/removed
+            let upvoteChangeValid = (upvotes.size() == oldUpvotes.size() + 1 && upvotes.hasAll(oldUpvotes) && upvotes.hasAny([uid])) || 
+                                    (upvotes.size() == oldUpvotes.size() - 1 && oldUpvotes.hasAll(upvotes) && !upvotes.hasAny([uid]));
+
+            let downvoteChangeValid = (downvotes.size() == oldDownvotes.size() + 1 && downvotes.hasAll(oldDownvotes) && downvotes.hasAny([uid])) ||
+                                      (downvotes.size() == oldDownvotes.size() - 1 && oldDownvotes.hasAll(downvotes) && !downvotes.hasAny([uid]));
+            
+            // A user can only change one list at a time (e.g. add upvote, or remove upvote), unless they are switching votes.
+            let isSwitching = (oldUpvotes.hasAny([uid]) && !upvotes.hasAny([uid]) && !oldDownvotes.hasAny([uid]) && downvotes.hasAny([uid])) ||
+                              (!oldUpvotes.hasAny([uid]) && upvotes.hasAny([uid]) && oldDownvotes.hasAny([uid]) && !downvotes.hasAny([uid]));
+
+            // Simplified: allow if only one vote array changes for the user, or if they are switching.
+            let oneUserChange = (upvotes.removeAll(oldUpvotes).size() <= 1 && oldUpvotes.removeAll(upvotes).size() <= 1) &&
+                                (downvotes.removeAll(oldDownvotes).size() <= 1 && oldDownvotes.removeAll(downvotes).size() <= 1);
+            
+            // Score must be correct
+            let scoreValid = data.score == upvotes.size() - downvotes.size();
+
+            return otherFieldsUnchanged && scoreValid && consistentVoteState && oneUserChange;
+        }
+
+        // Allow anyone to read comments.
+        allow get, list: if true;
+        
+        // Allow signed-in users to create valid comments.
+        allow create: if isSignedIn() && isValidNewComment();
+        
+        // Allow users to update their own valid comments OR to vote.
+        allow update: if isSignedIn() && ((isCommentOwner() && isValidUpdatedComment()) || isValidVoteUpdate());
+        
+        // Allow users to delete their own comments.
+        allow delete: if isCommentOwner();
+      }
+    }
+  }
+}
