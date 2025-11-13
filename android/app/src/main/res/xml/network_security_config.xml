@@ -5,4 +5,14 @@
             <certificates src="system" />
         </trust-anchors>
     </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">192.168.1.100</domain> <!-- Your local IP -->
+    </domain-config>
+    <domain-config>
+        <domain includeSubdomains="true">openlibrary.org</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
 </network-security-config>
